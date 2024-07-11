@@ -11,6 +11,10 @@
       "src": "/(.*)",
       "dest": "app.js"
     }
-  ]
+  ],
+  "functions": {
+    "api": {
+      "timeout": 60
+    }
+  }
 }
-
