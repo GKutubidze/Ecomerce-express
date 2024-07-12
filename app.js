@@ -6,12 +6,14 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const jwtMiddleware = require("./middleware/jwtMiddleware");
-require("dotenv").config({ path: ".env.local" });
+
+// Load environment variables from .env.local
+dotenv.config({ path: ".env.local" });
 
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
-
+console.log();
 // Middleware
 app.use(bodyParser.json());
 app.use(morgan("dev"));
@@ -21,7 +23,6 @@ app.use(
     credentials: true, // allow credentials
   })
 );
-
 app.use(cookieParser());
 
 const mongoURI = process.env.MONGO_URI;
@@ -29,11 +30,19 @@ const mongoURI = process.env.MONGO_URI;
 if (!mongoURI) {
   throw new Error("MONGO_URI is not defined in the environment variables.");
 }
+console.log("Environment Variables:");
+console.log("MONGO_URI:", process.env.MONGO_URI);
+console.log("STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
+console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
+console.log("PORT:", process.env.PORT);
 // Connect to MongoDB
 mongoose
   .connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+    process.exit(1); // Exit the process with failure
+  });
 
 // Define routes
 app.use("/api/users", require("./routes/userRoutes"));
@@ -53,7 +62,7 @@ app.get("/verify-token", jwtMiddleware, (req, res) => {
 });
 
 app.post("/create-checkout-session", async (req, res) => {
-  const { amount } = req.body; // Get amount from request body
+  const { amount } = req.body;
 
   if (!amount || amount <= 0) {
     return res.status(400).send({ error: "Invalid amount" });
@@ -69,7 +78,7 @@ app.post("/create-checkout-session", async (req, res) => {
             product_data: {
               name: "Total Amount",
             },
-            unit_amount: amount, // Use dynamic amount
+            unit_amount: amount,
           },
           quantity: 1,
         },
@@ -108,6 +117,7 @@ app.post("/verify-session", async (req, res) => {
 });
 
 // Start the server
-app.listen(process.env.PORT, () =>
-  console.log(`Server running on port ${process.env.PORT}`)
-);
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
