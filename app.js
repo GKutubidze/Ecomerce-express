@@ -17,16 +17,21 @@ app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(
   cors({
-    origin: "https://ecomerce-website-blue.vercel.app", // specify your frontend URL
+    origin: process.env.FRONTEND_URL, // specify your frontend URL
     credentials: true, // allow credentials
   })
 );
 
 app.use(cookieParser());
 
+const mongoURI = process.env.MONGO_URI;
+
+if (!mongoURI) {
+  throw new Error("MONGO_URI is not defined in the environment variables.");
+}
 // Connect to MongoDB
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
@@ -70,8 +75,8 @@ app.post("/create-checkout-session", async (req, res) => {
         },
       ],
       mode: "payment",
-      success_url: `http://localhost:5173/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: "http://localhost:5173/cancel",
+      success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${process.env.FRONTEND_URL}/cancel`,
     });
     res.json({ id: session.id });
   } catch (error) {
