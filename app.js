@@ -36,12 +36,17 @@ console.log("STRIPE_SECRET_KEY:", process.env.STRIPE_SECRET_KEY);
 console.log("FRONTEND_URL:", process.env.FRONTEND_URL);
 console.log("PORT:", process.env.PORT);
 // Connect to MongoDB
+
+if (!mongoURI) {
+  throw new Error("MONGO_URI is not defined in the environment variables.");
+}
+
 mongoose
   .connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => {
     console.error("MongoDB connection error:", err);
-    process.exit(1); // Exit the process with failure
+    process.exit(1);
   });
 
 // Define routes
