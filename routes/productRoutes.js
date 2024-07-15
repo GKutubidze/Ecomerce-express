@@ -6,7 +6,7 @@ const productController = require("../controllers/productController");
 
 router.get("/", productController.getAllProducts);
 router.post("/", jwtMiddleware, isAdmin, productController.createProduct);
-router.patch("/products/:id", productController.updateProduct);
+router.patch("/:id", productController.updateProduct);
 router.delete("/:id", jwtMiddleware, isAdmin, productController.deleteProduct);
 router.get("/:id", productController.getProductById);
 
