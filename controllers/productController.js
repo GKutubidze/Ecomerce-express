@@ -51,7 +51,6 @@ exports.updateProduct = async (req, res) => {
       price,
       stock,
       category,
-
       images,
     };
 
