@@ -13,7 +13,9 @@ dotenv.config({ path: ".env.local" });
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const app = express();
-console.log();
+console.log("hello");
+console.log("Frontend URL:", process.env.FRONTEND_URL);
+
 // Middleware
 app.use(bodyParser.json());
 app.use(morgan("dev"));
